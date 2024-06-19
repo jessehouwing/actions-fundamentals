@@ -13,5 +13,8 @@ jobs:
       - run: echo yay! 
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: jessehouwing/hello-world-action@v1
+        with: 
+          WHO_TO_GREET: "@jessehouwing"
         
                 
