@@ -17,7 +17,7 @@ This hands on lab is based on [My first workflow](01-My-first-workflow.md) and a
 
 <img width="349" alt="image" src="https://user-images.githubusercontent.com/5276337/174113475-967127de-45a7-4dc9-8477-4de4df62c7e6.png">
 
-4. Only allow the `main`branch to be deployed to this environment:
+4. Only allow the `main` branch to be deployed to this environment:
 
 <img width="350" alt="image" src="https://user-images.githubusercontent.com/5276337/174113782-70a1b18a-0ab9-49fd-a53e-cb2ea78916e1.png">
 

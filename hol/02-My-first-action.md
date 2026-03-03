@@ -1,6 +1,6 @@
 # 🔨 Hands-on: My first Action
 
-In this hands-on lab you will learn how to create a docker action, pass in parameters and return values to your workflow. And you will learn how to test the action locally with a CI build.
+In this hands-on lab you will learn how to create a composite action, pass in parameters and return values to your workflow. And you will learn how to test the action locally with a CI build.
 
 This hands on lab consists of the following steps:
 - [Creating the action](#creating-the-action)
@@ -10,11 +10,10 @@ This hands on lab consists of the following steps:
 
 ## Creating the action
 
-1. Create a new file [`hello-world-docker-action/action.yml`](/../../new/main?filename=hello-world-docker-action%2Faction.yml):
-<img width="400" alt="image" src="https://user-images.githubusercontent.com/5276337/174234628-14f58066-3188-42a6-9204-99c577558c08.png">
+1. Create a new file [`hello-world-composite-action/action.yml`](/../../new/main?filename=hello-world-composite-action%2Faction.yml)
 
-2. Add content to the `action.yml` file (see the [template](https://github.com/actions/hello-world-docker-action) and
-  [help](https://github.com/actions/hello-world-docker-action)). Have the action run a `Dockerfile` and pass
+2. Add content to the `action.yml` file follow the
+  [instructions](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action)). Have the action run a `Composite` and pass
   in the parameter `who-to-greet` with the default value `world`. Also give back an output that returns the current time.
 
 
@@ -22,49 +21,48 @@ This hands on lab consists of the following steps:
   <summary>Solution</summary>
 
 ```YAML
-name: 'Hello World Docker Action'
-description: 'Say hello to a user or the world.'
+name: 'Hello World'
+description: 'Greet someone'
 inputs:
-  who-to-greet:
+  who-to-greet:  # id of input
     description: 'Who to greet'
     required: true
-    default: 'world'
+    default: 'World'
 outputs:
-  time:
-    description: 'The time we said hello.'
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.who-to-greet }}
+  using: "composite"
+    using: "composite"
+  steps:
+    - name: Set Greeting
+      run: echo "Hello $INPUT_WHO_TO_GREET."
+      shell: bash
+      env:
+        INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
+
+    - name: Random Number Generator
+      id: random-number-generator
+      run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Set GitHub Path
+      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    - name: Run goodbye.sh
+      run: goodbye.sh
+      shell: bash
 ```
 
 </details>
 
 3. Commit the file (`[skip ci]` to not run a build, yet).
-4. Inside the `hello-world-docker-action` folder create the [`Dockerfile`](/../../new/main?filename=hello-world-docker-action%2FDockerfile). The container inherits `FROM alpine:3.22` and should copy and execute a file `entrypoint.sh`. Remember to make the script executable with `RUN chmod +x entrypoint.sh`
 
-<details>
-  <summary>Solution</summary>
-
-```dockerfile
-FROM alpine:3.22
-
-# Set the working directory inside the container
-WORKDIR /usr/src
-
-# Copy any source file(s) required for the action
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-
-# Configure the container to be run as an executable
-ENTRYPOINT ["/usr/src/entrypoint.sh"]
-```
-
-</details>
-
-5. Commit the file (`[skip ci]` to skip running a build, for now).
-6. Create the file [`entrypoint.sh`](/../../new/main?filename=hello-world-docker-action%2Fentrypoint.sh) in the folder. It is a simple bash script that writes a message to the console and sets the output parameter.
+4. Create the file [`googbye.sh`](/../../new/main?filename=hello-world-composite-action%goodbye.sh) in the folder. It is a simple bash script that writes a message to the console.
 
 <details>
   <summary>Solution</summary>
@@ -72,18 +70,28 @@ ENTRYPOINT ["/usr/src/entrypoint.sh"]
 ```bash
 #!/bin/sh -l
 
-echo "hello $1"
-
-echo "time=$(date)" >> $GITHUB_OUTPUT
+echo "echo Goodbye"
 ```
 
 </details>
 
-7. Commit the file (`[skip ci]` to not run a build, yet).
+5. Make sure you set the executable bit for the script when you commit it.
+
+<details>
+  <summary>Solution</summary>
+
+```bash
+git add --chmod=+x goodbye.sh
+```
+
+</details>
+
+6. Commit the file (`[skip ci]` to not run a build, yet).
 
 ## Testing the action
 
-1. To test the action we create a new workflow file [`.github/workflows/hello-world-docker-ci.yml`](/../../new/main?filename=.github%2Fworkflows%2Fhello-world-docker-ci.yml&workflow_template=blank).
+1. To test the action we create a new workflow file [`.github/workflows/hello-world-composite-ci.yml`](/../../new/main?filename=.github%2Fworkflows%2Fhello-world-composite-ci.yml&workflow_template=blank).
+
 2. The workflow should run on every push if the action has changed. Also add a manual trigger to start the build manually.
    Checkout the repository to reference the action locally and without a git reference.
 
@@ -91,11 +99,11 @@ echo "time=$(date)" >> $GITHUB_OUTPUT
   <summary>Solution</summary>
 
 ```YAML
-name: CI Build for Docker Action
+name: CI Build for Composite Action
 on:
   push:
     branches: [ main ]
-    paths: [ hello-world-docker-action/** ]
+    paths: [ hello-world-composite-action/** ]
   workflow_dispatch:
 
 jobs:
@@ -103,13 +111,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v6.0.2
 
-      - name: Run my own container action
+      - name: Run my own composite action
         id: hello-action
-        uses: ./hello-world-docker-action
+        uses: ./hello-world-composite-action
         with:
-          who-to-greet: '@wulfland'
+          who-to-greet: '@jessehouwing'
 
       - name: Output time set in the container
         run: echo "The time was ${{ steps.hello-action.outputs.time }} when the action said hello"
@@ -129,7 +137,7 @@ If time permits you can create a release and then use the action in a workflow i
 > **Note**
 > You can only publish a GitHub Action that exists in the root of a repository.
 
-1. Create a new public repository `hello-world-docker-action` and copy all the files from [hello-world-docker-action](../hello-world-docker-action) to it.
+1. Create a new public repository `hello-world-composite-action` and copy all the files from [hello-world-composite-action](../hello-world-composite-action) to it.
 
 2. Create a [new release](/../..releases/new) with a tag `v1` and the title `v1`. Click `Generate release notes` and publish the release.
 
@@ -151,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Say hello
-        uses: <your-github-username>/hello-world-docker-action@v1
+        uses: <your-github-username>/hello-world-composit-action@v1
         with:
           who-to-greet: '@octocat'
 ```
@@ -160,6 +168,6 @@ jobs:
 
 ## Summary
 
-In this hands-on lab you've learned how to create a docker action, pass in parameters, return values to your workflow, and to test the action locally with a CI build.
+In this hands-on lab you've learned how to create a composite action, pass in parameters, return values to your workflow, and to test the action locally with a CI build.
 
 You can continue now with [Staged deployments](03-Staged-deployments.md).
