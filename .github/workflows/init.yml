@@ -32,4 +32,3 @@ jobs:
     steps:
       - run: | 
           echo deploy
-      - continue-on-error: 
