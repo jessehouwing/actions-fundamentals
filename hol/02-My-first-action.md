@@ -119,8 +119,8 @@ jobs:
         with:
           who-to-greet: '@jessehouwing'
 
-      - name: Output time set in the container
-        run: echo "The time was ${{ steps.hello-action.outputs.time }} when the action said hello"
+      - name: Output set in the composite action
+        run: echo "The random number was ${{ steps.hello-action.outputs.random-number }} when the action said hello"
 
 ```
 
