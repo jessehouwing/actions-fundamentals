@@ -14,7 +14,7 @@ This hands on lab consists of the following steps:
 
 2. Add content to the `action.yml` file follow the
   [instructions](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action)). Have the action run a `Composite` and pass
-  in the parameter `who-to-greet` with the default value `world`. Also give back an output that returns the current time.
+  in the parameter `who-to-greet` with the default value `world`. Also give back an output that returns a random number.
 
 
 <details>
