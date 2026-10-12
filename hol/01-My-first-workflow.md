@@ -1,23 +1,12 @@
 # 🔨 Hands-on: My first workflow
 
-In this hands-on lab your will create your first GitHub Actions Workflow and learn how you can use Actions to automate tasks in your software development lifecycle. If you like more background information, please refer to the [GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions) pages on GitHub Docs. Good luck! 👍
+In this hands-on lab you will create your first GitHub Actions Workflow and learn how you can use Actions to automate tasks in your software development lifecycle. If you like more background information, please refer to the [GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions) pages on GitHub Docs. Good luck! 👍
+
+This lab is done in [your lab repository](../). If you haven't created it yet, follow [Setting up your lab repository](00-Setup.md) first.
 
 This hands on lab consists of the following steps:
-- [Creating a repository](#creating-a-repository)
 - [Creating the workflow](#creating-the-workflow)
 - [Viewing your workflow results](#viewing-your-workflow-results)
-
-## Creating a repository
-
-Go to [The ActionsFundamentals repository in the ps-actions-sandbox organization](https://github.com/ps-actions-sandbox/ActionsFundamentals) and click <kbd>Use this template</kbd>:
-
-<img width="400" alt="2022-09-18_11-24-58" src="https://user-images.githubusercontent.com/5276337/190895393-6fa0fad9-e05c-4fea-8126-a291b087d663.png">
-
-Select your GitHub user as the owner and name the repository. Leave the repo public to have unlimited action minutes:
-
-<img width="400" alt="2022-09-18_11-25-57" src="https://user-images.githubusercontent.com/5276337/190895398-751a1ec9-c1cf-497f-beb7-a6b53d4d911e.png">
-
-Continue now in the new repository.
 
 ## Creating the workflow
 
@@ -37,7 +26,7 @@ Go to **Actions** | [New Workflow](/../../actions/new) and click on [set up a wo
 name: GitHub Actions Demo
 ```
 
-5. Add the triggers to the worklow with the help of <kbd>Ctrl</kbd>+<kbd>Space</kbd> and the documentation. We want the workflow to trigger:
+5. Add the triggers to the workflow with the help of <kbd>Ctrl</kbd>+<kbd>Space</kbd> and the documentation. We want the workflow to trigger:
   - on every push to the `main` branch, but not when there are changes to files in the `.github` folder.
   - on every pull request with `main` as the base branch
   - Every sunday at 6:15 UTC
@@ -60,7 +49,7 @@ on:
 
 </details>
 
-6. Create a job `Build` that runs on the latest Ubuntu image on GitHub hosted runners. Check the documentation of the [virtual environments](https://github.com/actions/virtual-environments/) what label to use and what version it is. The job should do the following things:
+6. Create a job `Build` that runs on the newest Ubuntu image (`ubuntu-26.04`) on GitHub hosted runners. Check the documentation of the [runner images](https://github.com/actions/runner-images) and [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) for the available labels (`ubuntu-slim` is a lightweight option for simple jobs that don't need Docker). The job should do the following things:
   - Output the name of the event that triggered the workflow
   - Output the name of the branch that the repository is currently referencing
   - List all files in the repository
@@ -69,25 +58,39 @@ on:
   <summary>Solution</summary>
 
 ```YAML
+permissions:
+  contents: read
+
 jobs:
   Build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - run: |
-          echo "🎉 The job was triggered by event: ${{ github.event_name }}"
-          echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ."
+          echo "🎉 The job was triggered by event: $EVENT_NAME"
+          echo "🔎 The name of your branch is $REF and your repository is $REPOSITORY."
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          REPOSITORY: ${{ github.repository }}
 
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
 
       - name: List files in the repository
         run: |
-          echo "The repository ${{ github.repository }} contains the following files:"
+          echo "The repository $REPOSITORY contains the following files:"
           tree
+        env:
+          REPOSITORY: ${{ github.repository }}
 ```
+
+> **Note**
+> Security best practices used in these labs: grant the `GITHUB_TOKEN` only the permissions it needs (`permissions:`), set `persist-credentials: false` on `actions/checkout`, pass untrusted values (branch names, inputs) to scripts through `env:` instead of inlining expressions in `run:`, and don't use caching in deployment (CD) workflows.
 
 </details>
 
-7. Commit the workflow file - and trigger the workflow manually. It should not run automatically if your path filter works. Go to [Action](/../../Actions),  select [GitHub Actions Demo](/../../actions/workflows/github-actions-demo.yml) and `Run workflow`:
+7. Commit the workflow file - and trigger the workflow manually. It should not run automatically if your path filter works. Go to [Actions](/../../actions),  select [GitHub Actions Demo](/../../actions/workflows/github-actions-demo.yml) and `Run workflow`:
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/5276337/174105162-19f33fd1-8533-4860-9279-88fabec84451.png">
 
@@ -119,4 +122,4 @@ jobs:
 
 ## Summary
 
-In this hands-on you've learned to create you first workflow with triggers, jobs, steps, and expressions. Next you will write your [first GitHub Action](02-My-first-action.md).
+In this hands-on you've learned to create your first workflow with triggers, jobs, steps, and expressions. Next you will set up [CI/CD with staged deployments](02-Staged-deployments.md).

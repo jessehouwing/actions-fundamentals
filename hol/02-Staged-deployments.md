@@ -1,13 +1,17 @@
-# 🔨 Hands-on: Staged deployments
+# 🔨 Hands-on: CI/CD with staged deployments
 
-In this hands-on lab your will create environments and a staged deployment workflow with approvals.
-> Note: you can only do this on public repos for free accounts. Adding environments for `private` repos is only available for Organizations with a Team account (or higher) and users with GitHub Pro accounts.
+In this hands-on lab you will create environments and a staged deployment workflow with approvals.
+
+> Note: environments are available in public repositories on all plans. For private repositories you need GitHub Pro, Team or Enterprise, and required reviewers in private repositories need GitHub Enterprise. Use a public [lab repository](../) where your organization allows it; otherwise, check that your plan and organization policy support the features in this lab.
 
 This hands on lab is based on [My first workflow](01-My-first-workflow.md) and adds the following steps:
-- [Creating and protecting environments](#creating-and-protecting-environments)
-- [Adding a input for picking environments to manual workflow trigger](#adding-a-input-for-picking-environments-to-manual-workflow-trigger)
-- [Chaining workflow steps and conditional execution](#chaining-workflow-steps-and-conditional-execution)
-- [Reviewing and approving deployments](#reviewing-and-approving-deployments)
+- [🔨 Hands-on: CI/CD with staged deployments](#-hands-on-cicd-with-staged-deployments)
+  - [Creating and protecting environments](#creating-and-protecting-environments)
+  - [Adding a input for picking environments to manual workflow trigger](#adding-a-input-for-picking-environments-to-manual-workflow-trigger)
+  - [Turning off caching for deployments](#turning-off-caching-for-deployments)
+  - [Chaining workflow steps and conditional execution](#chaining-workflow-steps-and-conditional-execution)
+  - [Reviewing and approving deployments](#reviewing-and-approving-deployments)
+  - [Summary](#summary)
 
 ## Creating and protecting environments
 
@@ -42,19 +46,37 @@ Add an input of the type environment to the `workflow_dispatch` trigger that you
 
 </details>
 
+## Turning off caching for deployments
+
+Deployment (CD) workflows must not restore or save the dependency cache: a poisoned cache entry could end up in what you ship. Explicitly turn caching off with [`cache-mode`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#cache-mode).
+
+1. Add `cache-mode: none` at the top level of the workflow file (next to `permissions`) so it applies to every job, including the deployment jobs you add in the next section. A job can still override it with `jobs.<job_id>.cache-mode`.
+
+<details>
+  <summary>Solution</summary>
+
+```YAML
+permissions:
+  contents: read
+
+cache-mode: none
+```
+
+</details>
+
 ## Chaining workflow steps and conditional execution
 
 1. Now add 3 jobs to the workflow file:
-  - Test: runs on `ubuntu-latest` after `Build`. Only runs when the workflow was triggered manually. Runs on the environment `Test`. The job writes `Testing...` to the workflow log.
-  - Load-Test: runs on `ubuntu-latest` after `Build`. Only runs when the workflow was triggered manually. Runs on the environment `Load-Test`. The job writes `Testing...` to the workflow log and sleeps for 15 seconds.
-  - Production: runs on `ubuntu-latest` after `Test` and `Load-Test`. Deploys to the environment `Production` onyl if this was selected as the input parameter. The environment has the URL `https://writeabout.net`. To simulate deployment, the job will execute 5 steps. Each step with writes `Step x deploying...` to the workflow log and sleeps for 10 seconds.
+  - Test: runs on `ubuntu-26.04` after `Build`. Only runs when the workflow was triggered manually. Runs on the environment `Test`. The job writes `Testing...` to the workflow log.
+  - Load-Test: runs on `ubuntu-26.04` after `Build`. Only runs when the workflow was triggered manually. Runs on the environment `Load-Test`. The job writes `Testing...` to the workflow log and sleeps for 15 seconds.
+  - Production: runs on `ubuntu-26.04` after `Test` and `Load-Test`. Deploys to the environment `Production` only if this was selected as the input parameter. The environment has the URL `https://writeabout.net`. To simulate deployment, the job will execute 5 steps. Each step writes `Step x deploying...` to the workflow log and sleeps for 10 seconds.
 
 <details>
   <summary>Solution</summary>
 
 ```YAML
   Test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: github.event_name == 'workflow_dispatch'
     needs: Build
     environment: Test
@@ -62,7 +84,7 @@ Add an input of the type environment to the `workflow_dispatch` trigger that you
       - run: echo "🧪 Testing..."
 
   Load-Test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: github.event_name == 'workflow_dispatch'
     needs: Build
     environment: Load-Test
@@ -72,27 +94,27 @@ Add an input of the type environment to the `workflow_dispatch` trigger that you
           sleep 15
 
   Production:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: [Test, Load-Test]
     environment:
       name: Production
       url: https://writeabout.net
-    if: github.event.inputs.environment == 'Production'
+    if: inputs.environment == 'Production'
     steps:
       - run: |
-          echo "🚀 Step 1..."
+          echo "🚀 Step 1 deploying..."
           sleep 10
       - run: |
-          echo "🚀 Step 2..."
+          echo "🚀 Step 2 deploying..."
           sleep 10
       - run: |
-          echo "🚀 Step 3..."
+          echo "🚀 Step 3 deploying..."
           sleep 10
       - run: |
-          echo "🚀 Step 4..."
+          echo "🚀 Step 4 deploying..."
           sleep 10
       - run: |
-          echo "🚀 Step 5..."
+          echo "🚀 Step 5 deploying..."
           sleep 10
 ```
 
@@ -122,7 +144,7 @@ Add an input of the type environment to the `workflow_dispatch` trigger that you
 
 ## Summary
 
-In this lab you have learned to create and protect environments in GitHub and use them in a workflow. You have also learned to conditionally
+In this lab you have learned to create and protect environments in GitHub and use them in a workflow, and to turn off cache access for deployments with `cache-mode: none`. You have also learned to conditionally
 execute jobs or steps and to chain jobs using the `needs` keyword.
 
-You can continue with the [Reusable workflows](04-Reusable-workflows.md).
+You can continue with [Custom Actions](03-My-first-action.md).

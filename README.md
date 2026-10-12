@@ -29,30 +29,32 @@ Please follow [these instructions](GettingReady.md) and make sure you have set u
 - [ ] Events that trigger workflow
 - [ ] Jobs and steps
 - [ ] :mag: Demo: Creating a workflow
-- [ ] 🔨 Hands-on: [My first Action workflow](hol/01-My-first-workflow.md)
+- [ ] 🔨 Hands-on: [Setting up your lab repository](hol/00-Setup.md)
+- [ ] 🔨 Hands-on: [My first workflow](hol/01-My-first-workflow.md)
 - [ ] Advanced [workflow syntax](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
 - [ ] :coffee: Break
-- [ ] GitHub Actions
-- [ ] Types of Actions
-- [ ] 🔨 Hands-on: [My first container Action](hol/02-My-first-action.md)
-- [ ] Typescript and composite actions
-- [ ] Sharing and releasing actions
-- [ ] Using the GitHub API and Octokit
-- [ ] Job descriptions
-
-### Day 2
-- [ ] Introduction
 - [ ] Actions for CI/CD
 - [ ] Permissions for GitHub Token
 - [ ] Environments and Secrets
 - [ ] Staged deployments with environments, approvals, and deployment gates
-- [ ] 🔨 Hands-on: [Staged deployments](hol/03-Staged-deployments.md)
-- [ ] :coffee: Break
+- [ ] 🔨 Hands-on: [CI/CD: Staged deployments](hol/02-Staged-deployments.md)
+- [ ] GitHub Actions
+- [ ] Types of Actions
+- [ ] Typescript and composite actions
+- [ ] Sharing and releasing actions
+- [ ] Using the GitHub API and Octokit
+- [ ] Job descriptions
+- [ ] 🔨 Hands-on: [Custom Actions](hol/03-My-first-action.md)
+
+### Day 2
+- [ ] Introduction
 - [ ] Action policies
 - [ ] Running your workflows
 - [ ] Sharing workflows
-- [ ] 🔨 Hands-on: [Reusable workflows](hol/04-Reusable-workflows.md)
+- [ ] 🔨 Hands-on: [Callable workflows](hol/04-Reusable-workflows.md)
+- [ ] :coffee: Break
 - [ ] Best practices and security
+- [ ] 🔨 Hands-on: [Supply chain security](hol/05-Supply-chain-security.md)
 
 
 ## ⚡ Prerequisites

@@ -1,6 +1,6 @@
 # 🔨 Hands-on: Reusable workflows
 
-In this hands-on lab you will create a [reusable workflow](https://docs.github.com/en/actions/using-workflows/reusing-workflows#creating-a-reusable-workflow) and a workflow that consumes it. You will learn to pass in parameters to the reusable workflow and use output parameters in the consuming workflow.
+In this hands-on lab you will create a [reusable workflow](https://docs.github.com/en/actions/using-workflows/reusing-workflows#creating-a-reusable-workflow) and a workflow that consumes it in [your lab repository](../). You will learn to pass in parameters to the reusable workflow and use output parameters in the consuming workflow.
 
 This hands on lab consists of the following steps:
 - [Creating a reusable workflow](#creating-a-reusable-workflow)
@@ -9,7 +9,7 @@ This hands on lab consists of the following steps:
 
 ## Creating a reusable workflow
 
-1. Create a [new file](/../../new/main) `.github/workflows/reusable.yml` (paste the file name with the path in the box).
+1. Create the file [`.github/workflows/reusable.yml`](/../../new/main?filename=.github%2Fworkflows%2Freusable.yml&workflow_template=blank).
 2. Set the name to `Reusable workflow`.
 
 <details>
@@ -21,7 +21,7 @@ name: Reusable workflow
 
 </details>
 
-3. Add a `workflow_call` trigger with an [input parameter](https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call) `who-to-greet` of the type `string` that is required. Set the default value to `World`.
+3. Add a `workflow_call` trigger with an [input parameter](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callinputs) `who-to-greet` of the type `string` that is optional, with the default value `World`.
 
 <details>
   <summary>Solution</summary>
@@ -33,13 +33,16 @@ on:
       who-to-greet:
         description: 'The person to greet'
         type: string
-        required: true
+        required: false
         default: World
 ```
 
 </details>
 
-4. Add a job named `reusable-job` that runs on `ubuntu-latest` that echos "Hello <input parameter>" to the console.
+> **Note**
+> A `default` is only used when the input is optional. If you set `required: true`, the caller must always pass a value.
+
+4. Add a job named `reusable-job` that runs on `ubuntu-26.04` that echos "Hello <input parameter>" to the console.
 
 <details>
   <summary>Solution</summary>
@@ -47,18 +50,19 @@ on:
 ```YAML
 jobs:
   reusable-job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Greet someone
-        run: echo "Hello ${{ inputs.who-to-greet }}"
+        run: echo "Hello $WHO_TO_GREET"
+        env:
+          WHO_TO_GREET: ${{ inputs.who-to-greet }}
 ```
 
 </details>
 
 ## Adding an output parameter
 
-1. Add an additional step with the id `time` that uses a workflow command to set an output parameter
-named `current-time` to the current date and time (use `$(date)` for that).
+1. Add an additional step with the id `time` that writes an output named `time` with the current date and time (use `$(date)` for that) to the `GITHUB_OUTPUT` file. See [workflow commands](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#setting-an-output-parameter).
 
 <details>
   <summary>Solution</summary>
@@ -66,7 +70,7 @@ named `current-time` to the current date and time (use `$(date)` for that).
 ```YAML
       - name: Set time
         id: time
-        run: echo "time=$(date)" >> $GITHUB_OUTPUT
+        run: echo "time=$(date)" >> "$GITHUB_OUTPUT"
 ```
 
 </details>
@@ -77,13 +81,13 @@ named `current-time` to the current date and time (use `$(date)` for that).
   <summary>Solution</summary>
 
 ```YAML
-   outputs:
+    outputs:
       current-time: ${{ steps.time.outputs.time }}
 ```
 
 </details>
 
-3. Add an output parameter called `current-time` to `workflow_call` and set it to the outputs of the workflow command.
+3. Add an output parameter called `current-time` to `workflow_call` and set it to the output of the job.
 
 <details>
   <summary>Solution</summary>
@@ -110,31 +114,36 @@ on:
       who-to-greet:
         description: 'The person to greet'
         type: string
-        required: true
+        required: false
         default: World
     outputs:
       current-time:
         description: 'The time when greeting.'
         value: ${{ jobs.reusable-job.outputs.current-time }}
 
+permissions:
+  contents: read
+
 jobs:
   reusable-job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       current-time: ${{ steps.time.outputs.time }}
     steps:
       - name: Greet someone
-        run: echo "Hello ${{ inputs.who-to-greet }}"
+        run: echo "Hello $WHO_TO_GREET"
+        env:
+          WHO_TO_GREET: ${{ inputs.who-to-greet }}
       - name: Set time
         id: time
-        run: echo "time=$(date)" >> $GITHUB_OUTPUT
+        run: echo "time=$(date)" >> "$GITHUB_OUTPUT"
 ```
 
 </details>
 
 ## Consuming the reusable workflow
 
-1. Create a [new file](/../../new/main) `.github/workflows/reuse.yml` (paste the file name with the path in the box).
+1. Create the file [`.github/workflows/reuse.yml`](/../../new/main?filename=.github%2Fworkflows%2Freuse.yml&workflow_template=blank).
 2. Set the name to `Reuse other workflow` and add a manual trigger.
 
 <details>
@@ -144,9 +153,15 @@ jobs:
 name: Reuse other workflow
 
 on: [workflow_dispatch]
+
+permissions:
+  contents: read
 ```
 
 </details>
+
+> **Note**
+> A called workflow can never get more `GITHUB_TOKEN` permissions than the caller grants it.
 
 3. Add a job `call-workflow` that uses the reusable workflow and passes in your user name as an input parameter.
 
@@ -156,7 +171,7 @@ on: [workflow_dispatch]
 ```YAML
 jobs:
   call-workflow:
-    uses: ./.github/workflows/reusable.yml
+    uses: $/.github/workflows/reusable.yml
     with:
       who-to-greet: '@octocat'
 ```
@@ -170,10 +185,12 @@ jobs:
 
 ```YAML
   use-output:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: [call-workflow]
     steps:
-      - run: echo "Time was ${{ needs.call-workflow.outputs.current-time }}"
+      - run: echo "Time was $CURRENT_TIME"
+        env:
+          CURRENT_TIME: ${{ needs.call-workflow.outputs.current-time }}
 ```
 
 </details>
@@ -184,4 +201,4 @@ jobs:
 
 In this lab you have learned to create a reusable workflow and a workflow that consumes it. You also have learned to pass in parameters to the reusable workflow and to use output parameters in the consuming workflow.
 
-You can continue with the [README](../README.md).
+You can continue with the [Supply chain security](05-Supply-chain-security.md) lab.
