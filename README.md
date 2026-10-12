@@ -20,7 +20,7 @@ Please follow [these instructions](GettingReady.md) and make sure you have set u
 
 ## 📆 Agenda
 
-### Day 1: 🚀 Getting started
+### Part 1 (4 hours): 🚀 Getting started
 
 - [ ] Introduction and Icebreaker
 - [ ] GitHub Actions Fundamentals
@@ -38,6 +38,9 @@ Please follow [these instructions](GettingReady.md) and make sure you have set u
 - [ ] Environments and Secrets
 - [ ] Staged deployments with environments, approvals, and deployment gates
 - [ ] 🔨 Hands-on: [CI/CD: Staged deployments](hol/02-Staged-deployments.md)
+### Part 2 (4 hours): 🧩 Actions, reuse and security
+
+- [ ] Introduction
 - [ ] GitHub Actions
 - [ ] Types of Actions
 - [ ] Typescript and composite actions
@@ -45,14 +48,11 @@ Please follow [these instructions](GettingReady.md) and make sure you have set u
 - [ ] Using the GitHub API and Octokit
 - [ ] Job descriptions
 - [ ] 🔨 Hands-on: [Custom Actions](hol/03-My-first-action.md)
-
-### Day 2
-- [ ] Introduction
+- [ ] :coffee: Break
 - [ ] Action policies
 - [ ] Running your workflows
 - [ ] Sharing workflows
 - [ ] 🔨 Hands-on: [Callable workflows](hol/04-Reusable-workflows.md)
-- [ ] :coffee: Break
 - [ ] Best practices and security
 - [ ] 🔨 Hands-on: [Supply chain security](hol/05-Supply-chain-security.md)
 
