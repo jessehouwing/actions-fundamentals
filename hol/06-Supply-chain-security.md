@@ -147,7 +147,7 @@ updates:
 </details>
 
 > **Note**
-> The `github-actions` ecosystem with directory `/` covers the workflows in `.github/workflows` and an `action.yml` in the root of the repository. It does **not** cover the `action.yml` files of the custom actions you created in [Custom Actions](03-My-first-action.md), because they live in subfolders.
+> The `github-actions` ecosystem with directory `/` covers the workflows in `.github/workflows` and an `action.yml` in the root of the repository. It does **not** cover the `action.yml` files of the custom actions you created in [Custom Actions](04-My-first-action.md), because they live in subfolders.
 
 2. Add the folder of each custom action you created (for example `/hello-world-composite-bash-action`) to the configuration. Use the `directories` option (plural) instead of `directory`. It accepts a list and supports wildcards, so you can cover all actions in a folder at once. If you keep all your actions in a specific folder (like `.github/actions/*`), a single wildcard entry is enough.
 
@@ -214,7 +214,7 @@ updates:
 
 ## Automatically updating an outdated action reference
 
-1. Create a branch and in one of your workflows (for example the workflow from [My first workflow](01-My-first-workflow.md), or the [Custom Actions](03-My-first-action.md) CI workflow) replace the version of the checkout action with an older major version.
+1. Create a branch and in one of your workflows (for example the workflow from [My first workflow](01-My-first-workflow.md), or the [Custom Actions](04-My-first-action.md) CI workflow) replace the version of the checkout action with an older major version.
 
 <details>
   <summary>Solution</summary>
@@ -307,7 +307,7 @@ gh actions-lock --verify
 > **Note**
 > `gh-actions-lock` is a technical preview: the lockfile format and commands may still change.
 >
-> Local-path actions like `uses: ./hello-world-composite-bash-action` can't be locked. By default `gh actions-lock` rewrites them to the new same-repository syntax `uses: $/hello-world-composite-bash-action`, which always runs the code at the current commit. The [Custom Actions](03-My-first-action.md) lab already uses the `$/` syntax. 
+> Local-path actions like `uses: ./hello-world-composite-bash-action` can't be locked. By default `gh actions-lock` rewrites them to the new same-repository syntax `uses: $/hello-world-composite-bash-action`, which always runs the code at the current commit. The [Custom Actions](04-My-first-action.md) lab already uses the `$/` syntax. 
 
 ## Summary
 

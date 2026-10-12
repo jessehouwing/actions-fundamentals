@@ -4,10 +4,10 @@ In this hands-on lab you will learn how to create a custom action, pass in param
 
 | Flavour | Folder | Reference |
 |---|---|---|
-| A. [Docker action](03.1-docker-action.md) | `hello-world-docker-action` | [actions/hello-world-docker-action](https://github.com/actions/hello-world-docker-action) (or [actions/container-action](https://github.com/actions/container-action)) |
-| B. [Composite action using bash](03.2-composite-bash-action.md) | `hello-world-composite-bash-action` | [composite actions docs](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action) |
-| C. [Composite action using PowerShell (pwsh)](03.3-composite-pwsh-action.md) | `hello-world-composite-pwsh-action` | [composite actions docs](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action) |
-| D. [Composite action using Python](03.4-composite-python-action.md) | `hello-world-composite-python-action` | [composite actions docs](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action) |
+| A. [Docker action](04.1-docker-action.md) | `hello-world-docker-action` | [actions/hello-world-docker-action](https://github.com/actions/hello-world-docker-action) (or [actions/container-action](https://github.com/actions/container-action)) |
+| B. [Composite action using bash](04.2-composite-bash-action.md) | `hello-world-composite-bash-action` | [composite actions docs](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action) |
+| C. [Composite action using PowerShell (pwsh)](04.3-composite-pwsh-action.md) | `hello-world-composite-pwsh-action` | [composite actions docs](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action) |
+| D. [Composite action using Python](04.4-composite-python-action.md) | `hello-world-composite-python-action` | [composite actions docs](https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action) |
 
 All flavours have the same contract: an input `who-to-greet` (default `World`) and an output `time` with the time of the greeting.
 
@@ -25,10 +25,10 @@ This hands on lab consists of the following steps:
 
 Pick the flavour you want to try. You can create more than one.
 
-- [A. Docker action](03.1-docker-action.md)
-- [B. Composite action using bash](03.2-composite-bash-action.md)
-- [C. Composite action using PowerShell (pwsh)](03.3-composite-pwsh-action.md)
-- [D. Composite action using Python](03.4-composite-python-action.md)
+- [A. Docker action](04.1-docker-action.md)
+- [B. Composite action using bash](04.2-composite-bash-action.md)
+- [C. Composite action using PowerShell (pwsh)](04.3-composite-pwsh-action.md)
+- [D. Composite action using Python](04.4-composite-python-action.md)
 
 Come back here when you've committed your action(s) to continue with testing.
 
@@ -164,4 +164,4 @@ jobs:
 
 In this hands-on lab you've learned how to create a Docker or composite action (bash, pwsh or Python), pass in parameters, return values to your workflow using `GITHUB_OUTPUT`, and to test the action locally with a CI build.
 
-You can continue now with [Reusable workflows](04-Reusable-workflows.md).
+You can continue now with [Reusable workflows](05-Reusable-workflows.md).

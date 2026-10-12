@@ -147,4 +147,4 @@ cache-mode: none
 In this lab you have learned to create and protect environments in GitHub and use them in a workflow, and to turn off cache access for deployments with `cache-mode: none`. You have also learned to conditionally
 execute jobs or steps and to chain jobs using the `needs` keyword.
 
-You can continue with [Custom Actions](03-My-first-action.md).
+You can continue with [Containers in GitHub Actions](03-Containers.md).

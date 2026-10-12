@@ -38,23 +38,26 @@ Please follow [these instructions](GettingReady.md) and make sure you have set u
 - [ ] Environments and Secrets
 - [ ] Staged deployments with environments, approvals, and deployment gates
 - [ ] 🔨 Hands-on: [CI/CD: Staged deployments](hol/02-Staged-deployments.md)
+
 ### Part 2 (4 hours): 🧩 Actions, reuse and security
 
 - [ ] Introduction
+- [ ] Containers in GitHub Actions
+- [ ] 🔨 Hands-on: [Containers in GitHub Actions](hol/03-Containers.md)
 - [ ] GitHub Actions
 - [ ] Types of Actions
 - [ ] Typescript and composite actions
 - [ ] Sharing and releasing actions
 - [ ] Using the GitHub API and Octokit
 - [ ] Job descriptions
-- [ ] 🔨 Hands-on: [Custom Actions](hol/03-My-first-action.md)
+- [ ] 🔨 Hands-on: [Custom Actions](hol/04-My-first-action.md)
 - [ ] :coffee: Break
 - [ ] Action policies
 - [ ] Running your workflows
 - [ ] Sharing workflows
-- [ ] 🔨 Hands-on: [Callable workflows](hol/04-Reusable-workflows.md)
+- [ ] 🔨 Hands-on: [Callable workflows](hol/05-Reusable-workflows.md)
 - [ ] Best practices and security
-- [ ] 🔨 Hands-on: [Supply chain security](hol/05-Supply-chain-security.md)
+- [ ] 🔨 Hands-on: [Supply chain security](hol/06-Supply-chain-security.md)
 
 
 ## ⚡ Prerequisites
