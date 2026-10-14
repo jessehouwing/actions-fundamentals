@@ -167,8 +167,12 @@ The job fails: `bash` isn't available (`OCI runtime exec failed ... bash: not fo
 
       - name: Needs git and bash
         shell: bash
-        run: git log -1
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git log -1
 ```
+
+The `safe.directory` setting is needed because the container runs as `root`, while the workspace is owned by the runner user. Without it, git refuses to work with `fatal: detected dubious ownership in repository`.
 
 </details>
 

@@ -70,24 +70,24 @@ jobs:
 
 ## Exploiting the injection
 
-Show what an attacker can do with this: crash the runner.
+Show what an attacker can do with this: kill the runner's job process.
 
 1. Edit the title of the pull request to the text below. This closes the `echo` string and injects a new command.
 
 ```text
-x"; sudo shutdown -h now; echo "
+x"; sudo pkill -9 Runner.Worker; echo "
 ```
 
 2. Editing the title triggers the workflow (`edited`). The step now runs the following script, in which the title is no longer data but part of the code:
 
 ```bash
-echo "Title: x"; sudo shutdown -h now; echo ""
+echo "Title: x"; sudo pkill -9 Runner.Worker; echo ""
 ```
 
-3. Open the run under [Actions](/../../actions). The runner powers off in the middle of the job and the run fails with the message `The runner has received a shutdown signal` or `The hosted runner lost communication with the server`.
+3. Open the run under [Actions](/../../actions). Killing the worker process ends the job immediately; the run fails with no logs beyond `Set up job`.
 
 > **Note**
-> GitHub-hosted Ubuntu runners give the job user passwordless `sudo`, so injected commands run with full control of the VM. A real attacker would rather steal secrets or the `GITHUB_TOKEN` than shut down the machine. Only try this in your own lab repository.
+> GitHub-hosted Ubuntu runners give the job user passwordless `sudo`, so injected commands run with full control of the VM. A real attacker would rather steal secrets or the `GITHUB_TOKEN` than kill the process. Only try this in your own lab repository.
 
 ## Seeing GitHub detect the problem
 
@@ -170,7 +170,7 @@ updates:
       interval: weekly
 ```
 
-Or use wildcards. `/*/` matches every folder directly under the root, and for actions stored in a dedicated folder you can use for example `/.github/actions/*`:
+Or use a wildcard scoped to the action folders you created, so Dependabot doesn't also pick up unrelated folders in the repository root. For actions stored in a dedicated folder you can use for example `/.github/actions/*` instead:
 
 ```YAML
 version: 2
@@ -178,7 +178,7 @@ updates:
   - package-ecosystem: github-actions
     directories:
       - /
-      - /*/
+      - /hello-world-*/
     schedule:
       interval: weekly
 ```
@@ -196,7 +196,7 @@ updates:
   - package-ecosystem: github-actions
     directories:
       - /
-      - /*/
+      - /hello-world-*/
     schedule:
       interval: weekly
     cooldown:
