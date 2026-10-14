@@ -275,10 +275,12 @@ gh pin-actions workflows
 gh pin-actions workflows --overwrite
 ```
 
-4. Commit the pinned workflow files on a branch and merge them with a pull request.
+4. Reset your branch (`git checkout -- .` or `git reset --hard`) without committing these changes, and instead try the lockfile option below, which doesn't rewrite your workflow files.
 
 > **Note**
 > Because the `uses:` value is now a SHA instead of a version tag, Dependabot can still open update pull requests for it (it understands the `# v7.0.1` comment) — you don't lose the update notifications from the previous step by pinning.
+>
+> `gh-pin-actions --overwrite` can corrupt `uses:` values it doesn't recognize as a plain `owner/repo@tag` reference, such as same-repository `$/...` references or `docker://...` image references, leaving them blank. Review the generated `*-pin.yml` files carefully before applying, or restore those lines by hand afterwards. See [amenocal/gh-pin-actions#16](https://github.com/amenocal/gh-pin-actions/pull/16) for a fix.
 
 ### Lockfiles with `gh-actions-lock`
 
