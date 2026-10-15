@@ -103,7 +103,7 @@ With `container:` on a job, **all** steps of the job run inside the container, i
     steps:
       - name: Reach the service by name
         run: |
-          node -e "const s=require('net').connect(6379,'redis',()=>{s.write('PING\r\n')});s.on('data',d=>{console.log(d.toString());s.end()})"
+          node -e "const s=require('net').connect(6379,'redis',()=>{s.write('PING\r\n')});s.on('data',d=>{console.log(d.toString());s.end()});"
 ```
 
 When the job itself runs in a container, services are reachable by their service name (`redis`). When the job runs directly on the runner, services are reachable on `localhost` and you need to map the ports.
