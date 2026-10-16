@@ -138,7 +138,7 @@ Many actions assume the image has a typical set of tools available. This applies
     runs-on: ubuntu-latest
     container: alpine:3.22
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
@@ -161,7 +161,7 @@ The job fails: `bash` isn't available (`OCI runtime exec failed ... bash: not fo
       - name: Install the tools that actions expect
         run: apk add --no-cache bash git jq curl
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
