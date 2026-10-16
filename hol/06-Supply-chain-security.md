@@ -13,7 +13,8 @@ This hands on lab consists of the following steps:
   - [Enabling Dependabot for GitHub Actions](#enabling-dependabot-for-github-actions)
   - [Automatically updating an outdated action reference](#automatically-updating-an-outdated-action-reference)
   - [Locking and pinning actions to a commit](#locking-and-pinning-actions-to-a-commit)
-    - [Today: `gh-pin-actions`](#today-gh-pin-actions)
+      - [When is a SHA needed, and when does an immutable release do?](#when-is-a-sha-needed-and-when-does-an-immutable-release-do)
+    - [Pin action in the workflow: `gh-pin-actions`](#pin-action-in-the-workflow-gh-pin-actions)
     - [Lockfiles with `gh-actions-lock`](#lockfiles-with-gh-actions-lock)
   - [Summary](#summary)
 
@@ -278,6 +279,18 @@ GitHub's [immutable releases](https://docs.github.com/en/code-security/concepts/
 
 So even with immutable releases, when you pin manually you should still check each ref before trusting it: look up the commit the tag/SHA resolves to, confirm it comes from the action's own release/tag history, and verify there's a release attestation if one is expected (`gh release verify <tag> -R <owner>/<repo>`), rather than assuming any version tag is safe to pin to blindly.
 
+#### When is a SHA needed, and when does an immutable release do?
+
+| Situation | Reference to use | Why |
+| --- | --- | --- |
+| The action publishes **immutable releases** and `gh release verify <tag> -R <owner>/<repo>` succeeds | A full version tag (`@v7.0.1`) is acceptable | The tag can't be moved or deleted, and the attestation proves where the release came from. A SHA adds little, except readability of exactly what runs. |
+| The action has releases or tags, but they are **not immutable** (or you can't verify them) | Pin to the full commit SHA | The publisher, or someone who compromises their account, can move the tag to different code. |
+| A **floating tag** (`@v7`) or a **branch** (`@main`) | Pin to the full commit SHA, or avoid the action | They change by design, even for immutable releases: only the full `vX.Y.Z` release tag is locked. |
+| An action in an **untrusted or unknown** repository | Pin to the SHA of a commit you reviewed (or fork it) | Neither a SHA nor immutability says anything about whether the code is safe. |
+
+> **Note**
+> A SHA or an immutable release only guarantees that the code doesn't change underneath you. It doesn't tell you the code is trustworthy, and it doesn't pin what the action downloads or installs at run time (for example `npx some-tool` or a `latest` Docker image). For a deeper look at how to evaluate an action, see [A trust checklist for GitHub Actions](https://jessehouwing.net/a-trust-checklist-for-github-actions/).
+
 > **Warning**
 > GitHub resolves a SHA from *any fork* of a repository through the parent's name. `actions/checkout@<sha>` therefore also runs if `<sha>` only exists in someone's fork (an "impostor commit"). Always copy the SHA from the tag or release in the original repository, never from a pull request or a blog post.
 
@@ -287,7 +300,7 @@ So even with immutable releases, when you pin manually you should still check ea
 
 Doing this by hand for every action, and keeping the SHAs current, does not scale. Two tools help:
 
-### Today: `gh-pin-actions`
+### Pin action in the workflow: `gh-pin-actions`
 
 [`gh-pin-actions`](https://github.com/amenocal/gh-pin-actions) is a `gh` CLI extension that rewrites `uses:` lines to `owner/repo@sha # version` for you.
 
