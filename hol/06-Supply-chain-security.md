@@ -354,7 +354,7 @@ gh actions-lock --verify
 ```
 
 > **Note**
-> `gh-actions-lock` is a technical preview: the lockfile format and commands may still change.
+> `gh-actions-lock` is a public preview.
 >
 > Local-path actions like `uses: ./hello-world-composite-bash-action` can't be locked. By default `gh actions-lock` rewrites them to the new same-repository syntax `uses: $/hello-world-composite-bash-action`, which always runs the code at the current commit. The [Custom Actions](04-My-first-action.md) lab already uses the `$/` syntax. 
 
