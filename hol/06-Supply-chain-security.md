@@ -8,6 +8,7 @@ This hands on lab consists of the following steps:
   - [Introducing a script injection](#introducing-a-script-injection)
   - [Exploiting the injection](#exploiting-the-injection)
   - [Seeing GitHub detect the problem](#seeing-github-detect-the-problem)
+  - [Finding the problem locally with the GitHub CLI](#finding-the-problem-locally-with-the-github-cli)
   - [Enforcing code scanning checks](#enforcing-code-scanning-checks)
   - [Enabling Dependabot for GitHub Actions](#enabling-dependabot-for-github-actions)
   - [Automatically updating an outdated action reference](#automatically-updating-an-outdated-action-reference)
@@ -56,6 +57,8 @@ permissions: {}
 
 jobs:
   greet:
+    # Guard: only the repository owner can trigger this deliberately vulnerable job
+    if: github.actor == github.repository_owner
     runs-on: ubuntu-26.04
     steps:
       - name: Echo the title
@@ -64,6 +67,9 @@ jobs:
 ```
 
 </details>
+
+> [!NOTE]
+> The `if` guard makes sure only you (the repository owner) can trigger this vulnerable job, so nobody else can exploit it while you do the lab. Code scanning still reports the injection, because the guard doesn't remove the vulnerable expression.
 
 3. Commit the file and create a pull request to `main`.
 
@@ -93,6 +99,35 @@ echo "Title: x"; sudo pkill -9 Runner.Worker; echo ""
 1. Go to the pull request and wait for the `CodeQL` checks to finish.
 2. Open the `Code scanning results / CodeQL` check, or go to [Security](/../../security/code-scanning). You should see a `Code injection` alert (`actions/code-injection/medium`, severity `Medium`) pointing to the `run` line.
 3. Read the alert details: it explains which untrusted input flows into the script.
+
+## Finding the problem locally with the GitHub CLI
+
+You don't have to wait for a pull request to find out. Run CodeQL locally, before you push, with the [`gh codeql`](https://github.com/github/gh-codeql) extension. Run this from the root of your repository, on the `script-injection` branch.
+
+1. Install the extension and the CodeQL CLI:
+
+```powershell
+gh extension install github/gh-codeql
+gh codeql set-channel release
+gh codeql version
+```
+
+2. Create a CodeQL database for the `actions` language:
+
+```powershell
+gh codeql database create codeql-db --language=actions --source-root=. --overwrite
+```
+
+3. Analyze it with the `Extended` query suite, the same suite you configured for code scanning:
+
+```powershell
+gh codeql database analyze codeql-db codeql/actions-queries:codeql-suites/actions-security-extended.qls --format=csv --output=codeql-results.csv
+```
+
+4. Open `codeql-results.csv` in your editor and read the results. You should see a `Code injection` finding that points to `.github/workflows/injection.yml` and the `${{ github.event.pull_request.title }}` expression. This is the same alert code scanning reports on the pull request.
+
+> **Note**
+> The database (`codeql-db`) and results (`codeql-results.csv`) are already listed in the `.gitignore` of this repository, so you don't accidentally commit them. Run this before every push, or automate it with a git `pre-push` hook, to keep vulnerable workflows out of your pull requests.
 
 ## Enforcing code scanning checks
 
