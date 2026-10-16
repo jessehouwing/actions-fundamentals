@@ -52,8 +52,7 @@ on:
   pull_request:
     types: [opened, edited]
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   greet:
