@@ -14,3 +14,4 @@ jobs:
       - name: Echo the title
         run: |
           echo "Title: ${{ github.event.pull_request.title }}"
+          exit 1
